@@ -19,7 +19,7 @@ def pegar_cotacoes():
     texto_cotacoes["text"] = texto
 
 
-color7 = "#E3FDFD"
+
 
 janela = Tk()
 janela.title("Cotação")
@@ -30,7 +30,7 @@ texto_inicial = Label(janela, text="Dolar/Euro/BTC:")
 texto_inicial.place(x=100,y=0)
 
 botão = Button(janela, text='Buscar Cotações', command= pegar_cotacoes)
-botão.place(x=100,y=50)
+botão.place(x=100,y=50, width=100, height=50)
 
 texto_cotacoes = Label(janela,text="")
 texto_cotacoes.place(x=100,y=100)
