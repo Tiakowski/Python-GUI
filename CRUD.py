@@ -1,23 +1,36 @@
+from ast import Lambda
 import re
 from tkinter import *
 from tkinter import messagebox
 import psycopg2
 
-#banco de dados
+#banco de dados #####################
+conn = psycopg2.connect (
+            database = "CRUD",
+            user = "postgres",
+            password = "123",
+            host = "localhost",
+            port = "5432")
 
-# conn = psycopg2.connect (
-#             database = "CRUD",
-#             user = "postgres",
-#             password = "123",
-#             host = "localhost",
-#             port = "5432")
+def inserir():
+  cur = conn.cursor()
+  comando = f'''INSERT INTO cadastros (nome, telefone, email) VALUES ('{dados["nome"]}', '{dados["telefone"]}', '{dados["email"]}') ''' 
+  cur.execute(comando)
+  conn.commit()
+  cur.close()
 
-# cur = conn.cursor()
-# comando = '''create table cadastros xxxxxxxxxxxxxxxxxxx'''
+def ler():
+  cur = conn.cursor()
+  comando = f'''SELECT * FROM cadastros''' 
+  cur.execute(comando)
+  resultado = cur.fetchall()
+  print(type(resultado))
+  print(resultado[0])
+  cur.close()
+  return resultado
 
-# cur.execute(comando)
-# conn.commit()
-# conn.close()
+
+####################################
 
 
 
@@ -60,7 +73,9 @@ def imprimir():
         etelefone.delete(0,END)
         dados["email"] = eemail.get()
         eemail.delete(0,END)
+        inserir()
         messagebox.showinfo("Sucesso","Cadastro realizado com sucesso!")
+
         
 
 
@@ -98,8 +113,17 @@ eemail = Entry(janela)
 eemail.place(x=3,y=158)
 
 
-botao = Button(janela, command=imprimir , text="Cadastrar", width=20, height=1)
-botao.place(x=50,y=200)
+botao_cadastro = Button(janela, command=imprimir , text="Cadastrar", width=20, height=1)
+botao_cadastro.place(x=50,y=200)
+
+botao_ler = Button(janela, command=lambda: [ler(),listagem()], text="Ler", width=20, height=1)
+botao_ler.place(x=50,y=230)
+
+def listagem():
+  lista = Listbox(janela, width=20, height=8)
+  lista.place(x=150,y=50)
+  lista.insert(END,"Nome")
+  lista.insert(END,"Nome 2")
 
 
 
