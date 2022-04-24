@@ -27,6 +27,13 @@ def ler():
   cur.close()
   return resultado
 
+def excluir(id_selecionado):
+  cur = conn.cursor()
+  comando = f'''delete from cadastros where id='{id_selecionado}' ''' 
+  cur.execute(comando)
+  conn.commit()
+  cur.close()
+
 
 ####################################
 
@@ -73,11 +80,7 @@ def imprimir():
         eemail.delete(0,END)
         inserir()
         messagebox.showinfo("Sucesso","Cadastro realizado com sucesso!")
-
-def closeconn():
-  conn.close      
-
-
+  
 
 
 janela = Tk()
@@ -90,10 +93,6 @@ lnome = Label(janela,text="Nome:")
 lnome.place(x=3,y=26)
 enome = Entry(janela)
 enome.place(x=3,y=50)
-
-#x = horizontal
-#y = vertical
-
 
 ltelefone = Label(janela,text="Telefone:")
 ltelefone.place(x=3,y=80)
@@ -108,37 +107,48 @@ eemail.place(x=3,y=158)
 lerro = Label(janela,text="")
 lerro.place(x=70,y=270)
 
-
-botao_cadastro = Button(janela, command=imprimir , text="Cadastrar", width=15, height=1)
-botao_cadastro.place(x=10,y=200)
-
-
-
-botao_editar = Button(janela,width=15,text="Editar", height=1)
-botao_editar.place(x=130,y=230)
-
-botao_deletar = Button(janela,width=15,command=closeconn,text="Deletar", height=1)
-botao_deletar.place(x=130,y=200)
-
-def atualizar_tabela():
-  colunas = ("ID","Nome","Telefone","Email")
-  leitura = Treeview(janela, columns=colunas, show="headings",height=5,)
+colunas = ("ID","Nome","Telefone","Email")
+leitura = Treeview(janela, columns=colunas, show="headings",height=5,)
+contas_visiveis = []
+def atualizar():
+  global contas_visiveis
   leitura.heading("ID",text="ID")
   leitura.heading('Nome',text="Nome")
   leitura.heading("Telefone",text="Telefone")
   leitura.heading("Email", text="Email")
-
   leitura.place(x=150,y=50)
 
-  contatos = ler()
+  cadastros = ler()
+  for conta in cadastros:
+    if conta[0] not in contas_visiveis:
+      leitura.insert('',END, values=conta)
+      contas_visiveis.append(conta[0])
+
+atualizar()
+
+#Selecionar ID do item selecionado na TreeView
+
+def deletar():
+  try:
+    ItemSelecionado = leitura.focus()
+    temp = leitura.item(ItemSelecionado,'values')
+    leitura.delete(ItemSelecionado)
+    excluir(temp[0])
+  except TclError:
+    messagebox.showerror("Erro","Selecione um item para deletar")
   
-  for contato in contatos:
-    leitura.insert('',END, values=contato)
+  
+botao_ler = Button(janela, text="Atualizar",command=atualizar, width=15, height=1)
+botao_ler.place(x=351,y=220)
 
-atualizar_tabela()
+botao_cadastro = Button(janela, command=imprimir , text="Cadastrar", width=52, height=2)
+botao_cadastro.place(x=350,y=250)
 
-botao_ler = Button(janela, text="Atualizar", command=atualizar_tabela, width=15, height=1)
-botao_ler.place(x=10,y=230)
+botao_editar = Button(janela,width=15,text="Editar", height=1)
+botao_editar.place(x=609,y=220)
+
+botao_deletar = Button(janela,width=15,command=deletar,text="Deletar", height=1)
+botao_deletar.place(x=480,y=220)
 
 janela.mainloop()
 
