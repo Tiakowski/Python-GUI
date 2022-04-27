@@ -1,7 +1,7 @@
 import re
 from tkinter import *
 from tkinter import messagebox
-from tkinter.ttk import Treeview
+from tkinter.ttk import Combobox, Treeview
 import psycopg2
 
 #banco de dados #####################
@@ -14,7 +14,7 @@ conn = psycopg2.connect (
 
 def inserir():
   cur = conn.cursor()
-  comando = f'''INSERT INTO cadastros (nome, telefone, email) VALUES ('{dados["nome"]}', '{dados["telefone"]}', '{dados["email"]}') ''' 
+  comando = f'''INSERT INTO cadastros (nome, telefone, email) VALUES ('{dados["nome"].title()}', '{dados["telefone"]}', '{dados["email"]}') ''' 
   cur.execute(comando)
   conn.commit()
   cur.close()
@@ -34,10 +34,62 @@ def excluir(id_selecionado):
   conn.commit()
   cur.close()
 
+def pesquisar():
+  resultado = ""
+  cur = conn.cursor()
+
+  if item_combobox.get() == "Nome":
+    print(2)
+    comando = f'''select * from cadastros where nome like '%{epesquisa.get().title()}%' ''' 
+    cur.execute(comando)
+    resultado = cur.fetchall()
+    print(resultado)
+  if item_combobox.get() == "Telefone":
+    comando = f'''select * from cadastros where telefone like '%{epesquisa.get()}%' ''' 
+    cur.execute(comando)
+    resultado = cur.fetchall()
+  if item_combobox.get() == "Email":
+    comando = f'''select * from cadastros where email like '%{epesquisa.get()}%' ''' 
+    cur.execute(comando)
+    resultado = cur.fetchall()
+
+    cur.close()
+  return resultado
+
+
+def editar():
+  try:
+    dados = editar_tabela()
+    print(dados[0])
+    cur = conn.cursor()
+    if enome.get() != "":
+      if verificar_nome(enome.get()):
+        comando = f'''UPDATE cadastros SET nome = '{enome.get()}' WHERE id = '{dados[0]}' ''' 
+        cur.execute(comando)
+      else:
+        lerro["text"] = "Digite nome e sobrenome."
+
+    if etelefone.get() != "":
+      if verificar_telefone(etelefone.get):
+        comando = f'''UPDATE cadastros SET telefone = '{etelefone.get()}' WHERE id = '{dados[0]}' ''' 
+        cur.execute(comando)
+      else:
+        lerro["text"] = "Telefone inválido"
+
+    if eemail.get() != "":
+      if verificar_email(eemail.get()):
+        comando = f'''UPDATE cadastros SET email = '{eemail.get()}' WHERE id = '{dados[0]}' ''' 
+        cur.execute(comando)
+      else:
+        lerro["text"] = "Email Inválido."
+
+    conn.commit()
+    cur.close()
+  except IndexError:
+    messagebox.showerror("Erro","Selecione um item para editar")
+
 
 ####################################
-
-
 
 dados = {"nome":"","telefone":"","email":""}
 
@@ -104,31 +156,47 @@ lemail.place(x=3,y=134)
 eemail = Entry(janela)
 eemail.place(x=3,y=158)
 
+lpesquisa = Label(janela,text="Pesquisa:")
+lpesquisa.place(x=3,y=210)
+epesquisa = Entry(janela)
+epesquisa.place(x=3,y=234)
+
 lerro = Label(janela,text="")
 lerro.place(x=70,y=270)
 
 colunas = ("ID","Nome","Telefone","Email")
 leitura = Treeview(janela, columns=colunas, show="headings",height=5,)
-contas_visiveis = []
-def atualizar():
-  global contas_visiveis
-  leitura.heading("ID",text="ID")
-  leitura.heading('Nome',text="Nome")
-  leitura.heading("Telefone",text="Telefone")
-  leitura.heading("Email", text="Email")
-  leitura.place(x=150,y=50)
+leitura.heading("ID",text="ID")
+leitura.heading('Nome',text="Nome")
+leitura.heading("Telefone",text="Telefone")
+leitura.heading("Email", text="Email")
+leitura.place(x=150,y=50)
 
-  cadastros = ler()
+def deletar_tudo():
+    for item in leitura.get_children():
+      leitura.delete(item)
+
+def pesquisar_termo():
+  cadastros = pesquisar()
+  deletar_tudo()
   for conta in cadastros:
-    if conta[0] not in contas_visiveis:
-      leitura.insert('',END, values=conta)
-      contas_visiveis.append(conta[0])
+    leitura.insert('',END, values=conta)
+
+
+
+def atualizar():
+  cadastros = ler()
+  deletar_tudo()
+  for conta in cadastros:
+    leitura.insert('',END, values=conta)
+
 
 atualizar()
 
 #Selecionar ID do item selecionado na TreeView
 
-def deletar():
+
+def deletar_tabela():
   try:
     ItemSelecionado = leitura.focus()
     temp = leitura.item(ItemSelecionado,'values')
@@ -137,18 +205,38 @@ def deletar():
   except TclError:
     messagebox.showerror("Erro","Selecione um item para deletar")
   
-  
+
+def editar_tabela():
+  ItemSelecionado = leitura.focus()
+  temp = leitura.item(ItemSelecionado,'values')
+  return temp  
+
+#COMBO BOX
+item_combobox = StringVar()
+box = Combobox(janela, textvariable=item_combobox)
+box['values'] = ('Nome', 
+                 'Telefone',
+                  'Email')
+box.place(x=130,y=234)
+box.set("Nome")
+box['state'] = 'readonly'
+
+
+
 botao_ler = Button(janela, text="Atualizar",command=atualizar, width=15, height=1)
 botao_ler.place(x=351,y=220)
 
 botao_cadastro = Button(janela, command=imprimir , text="Cadastrar", width=52, height=2)
 botao_cadastro.place(x=350,y=250)
 
-botao_editar = Button(janela,width=15,text="Editar", height=1)
+botao_editar = Button(janela,width=15,text="Editar",command=editar, height=1)
 botao_editar.place(x=609,y=220)
 
-botao_deletar = Button(janela,width=15,command=deletar,text="Deletar", height=1)
+botao_deletar = Button(janela,width=15,command=deletar_tabela,text="Deletar", height=1)
 botao_deletar.place(x=480,y=220)
+
+botao_pesquisar = Button(janela,text="Pesquisar",command=pesquisar_termo)
+botao_pesquisar.place(x=35,y=259)
 
 janela.mainloop()
 
