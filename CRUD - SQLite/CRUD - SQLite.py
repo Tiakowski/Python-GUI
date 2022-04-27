@@ -49,11 +49,9 @@ def pesquisar():
   cur = conn.cursor()
 
   if item_combobox.get() == "Nome":
-    print(2)
     comando = f'''select * from cadastros where nome like "%{epesquisa.get().title()}%" ''' 
     cur.execute(comando)
     resultado = cur.fetchall()
-    print(resultado)
   if item_combobox.get() == "Telefone":
     comando = f'''select * from cadastros where telefone like "%{epesquisa.get()}%" ''' 
     cur.execute(comando)
@@ -69,7 +67,6 @@ def pesquisar():
 def editar():
   try:
     dados = editar_tabela()
-    print(dados[0])
     cur = conn.cursor()
     if enome.get() != "":
       if verificar_nome(enome.get()):
