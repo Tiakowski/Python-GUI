@@ -1,5 +1,4 @@
 from tkinter import *
-from tkinter import messagebox
 
 janela = Tk()
 janela.title("Calculadora")
@@ -120,7 +119,6 @@ def numvirgula ():
     if numero_digitado[-1] not in [0-9]:
         numero_digitado.append(".")
         inserir_tela(",")
-    
 
 def limpar():
     global numero_digitado
@@ -218,12 +216,9 @@ def igual():
             conta['state'] = 'disabled'
 
             pass
-
-
     except IndexError:
         pass
-    
-    
+       
 def backspace():
     global numero_digitado
 
