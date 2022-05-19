@@ -304,6 +304,7 @@ botaolimpar.grid(column=3,row=2,padx=10,pady=10)
 
 def numerodigitado(event):
     numero = repr(event.char)
+    print(event)
     if numero == "'1'":
         num1()
     elif numero == "'2'":
@@ -338,6 +339,7 @@ def numerodigitado(event):
         backspace()
     elif numero == "','":
         numvirgula()
+    print(numero)
 
 janela.bind(sequence="<Key>", func=numerodigitado)
 
