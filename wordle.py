@@ -12,55 +12,71 @@ palavra = palavra_aleatoria()
 def caps(event):
     numero = repr(event.keycode)
     foco = janela.focus_get()
+    print(numero)
+    naopode = [13,8,37]
+    
+    #Códigos keycode:
+    #13 = Enter / 8 = Delete / 39 = Seta pra direita / 37 = Seta pra esquerda
 
-    
-    
+    #Enter
     if int(numero) == 13:
-        teste()
+        verificar()
 
-    if int(numero) != 8 and int(numero) != 13:
+    #Inserir a letra maiuscula e foco no próximo entry
+    if int(numero) not in naopode:
         if foco == letra1:
-            a.set(chr(int(numero)))
+            if int(numero) != 39:
+                a.set(chr(int(numero)))
             letra2.focus_set()
 
         elif foco == letra2:
-            b.set(chr(int(numero)))
+            if int(numero) != 39:
+                b.set(chr(int(numero)))
             letra3.focus_set()
 
         elif foco == letra3:
-            c.set(chr(int(numero)))
+            if int(numero) != 39:
+                c.set(chr(int(numero)))
             letra4.focus_set()
 
         elif foco == letra4:
-            d.set(chr(int(numero)))
+            if int(numero) != 39:
+                d.set(chr(int(numero)))
             letra5.focus_set()
 
         elif foco == letra5:
-            e.set(chr(int(numero)))
+            if int(numero) != 39:
+                e.set(chr(int(numero)))
 
-    elif int(numero) == 8:
+    #Delete e entry anterior
+    elif int(numero) == 8 or int(numero) == 37:
         if foco == letra1:
-            letra1.delete(0,'end')
+            if int(numero) == 8:
+                letra1.delete(0,'end')
 
         elif foco == letra2:
-            letra2.delete(0,'end')
+            if int(numero) == 8:
+                letra2.delete(0,'end')
             letra1.focus_set()
 
         elif foco == letra3:
-            letra3.delete(0,'end')
+            if int(numero) == 8:
+                letra3.delete(0,'end')
             letra2.focus_set()
 
         elif foco == letra4:
-            letra4.delete(0,'end')
+            if int(numero) == 8:
+                letra4.delete(0,'end')
             letra3.focus_set()
 
         elif foco == letra5:
-            letra5.delete(0,'end')
+            if int(numero) == 8:
+                letra5.delete(0,'end')
             letra4.focus_set()
         
 
 
-def teste():
+def verificar():
     global palavra
     palavra_contada =dict(collections.Counter(palavra))
     contador_branco = 0
@@ -103,14 +119,13 @@ def teste():
 
              
 
-botao = Button(janela,text="Teste",command=teste)
-botao.grid(column=1,row=10) 
+botao = Button(janela,text="Verificar",width=20,font=("Helvetica",12,"bold"),command=verificar)
+botao.grid(column=1,columnspan=3,row=10) 
 
 a = StringVar()
 letra1 = Entry(janela, width=3,font=("Helvetica", 32), justify="center",textvariable=a)
 letra1.grid(column=0,row=0)
 letra1.bind('<KeyRelease>',caps)
-
 
 b = StringVar()
 letra2 = Entry(janela, width=3,font=("Helvetica", 32), justify="center",textvariable=b)
