@@ -11,6 +11,7 @@ palavra = palavra_aleatoria()
 
 def caps(event):
     numero = repr(event.keycode)
+    print(type((event.keycode)))
     foco = janela.focus_get()
     print(numero)
     naopode = [13,8,37]
