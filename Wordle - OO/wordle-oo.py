@@ -175,7 +175,7 @@ class entradas:
 
 palavra = palavra_aleatoria()
 janela = Tk()
-janela.title("Worlde")
+janela.title("Wordle")
 janela.config(background="#fffafa")
 Primeiro = entradas(0,palavra)
 Segundo = entradas(1,palavra)
@@ -191,7 +191,6 @@ Terceiro.desativar()
 Quarto.desativar()
 Quinto.desativar()
 Primeiro.focus()
-print(palavra)
 endereço = Primeiro
 
 def digitar (event):
